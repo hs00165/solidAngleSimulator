@@ -13,6 +13,11 @@ var detX = [];
 var detY = [];
 var detZ = [];
 
+var xStart = [-10];
+var xEnd = [10];
+var yStart = [-10];
+var yEnd = [10];
+
 
 var trace1 = {
   x: x0,
@@ -21,44 +26,12 @@ var trace1 = {
   type: 'scatter',
 };
 
-var trace3 = {
-  x: x2,
-  y: y2,
-  type: 'histogram2d',
-  colorscale : [['0' , 'rgb(0,225,100)'],['1', 'rgb(100,0,200)']],
-
-  xbins: {
-    start: -20,
-    end: 20,
-    size: 2
-  },
-
-  ybins: {
-    start: -20,
-    end: 20,
-    size: 2
-  }
-
-
-};
 
 
 
-var layout = {
-
-  xaxis: {range: [-20, 20]},
-
-  yaxis: {range: [-20, 20]}
-
-};
-
-
-var data = [trace1, trace3];
-
-Plotly.newPlot('chartRight', data, layout);
-
-
-
+function delay(time) {
+  return new Promise(resolve => setTimeout(resolve, time));
+}
 
 
 // Defines the vertices of the requested polygon for the
@@ -136,22 +109,61 @@ function convertSphericalToCartesian(r, theta, phi) {
 
 async function initializeDetector() {
 
-  [detX, detY, detZ] = defineDetector(4, 10, 0, 0, 40);
+  [detX, detY, detZ] = defineDetector(4, 10, 20, -20, 30);
+
+  let maxX = detX[0];
+  let maxY = detY[0];
+  let minX = detX[0];
+  let minY = detY[0];
 
 
   for(let vertex = 0; vertex<detX.length; vertex++) {
 
     x0[vertex] = detX[vertex];
     y0[vertex] = detY[vertex];
+
+    if(x0[vertex] > maxX) maxX = x0[vertex];
+    if(y0[vertex] > maxY) maxY = y0[vertex];
+    if(x0[vertex] < minX) minX = x0[vertex];
+    if(x0[vertex] < minY) minY = y0[vertex];
+
   }
 
   x0.push(detX[0]);
   y0.push(detY[0]);
 
+  xStart[0] = minX - 3;
+  xEnd[0] = maxX + 3;
+
+  yStart[0] = minY - 3;
+  yEnd[0] = maxY + 3;
 
 
 
-  Plotly.redraw('chartRight');
+
+
+  var trace3 = {
+    x: x2,
+    y: y2,
+    type: 'histogram2d',
+    // colorscale : [['0' , 'rgb(0,225,100)'],['1', 'rgb(100,0,200)']],
+
+    xbins: {
+      start: xStart[0],
+      end: xEnd[0],
+      size: (xEnd[0] - xStart[0]) / 50
+    },
+
+    ybins: {
+      start: yStart[0],
+      end: yEnd[0],
+      size: (yEnd[0] - yStart[0]) / 50
+    }
+  };
+
+  var data = [trace1, trace3];
+  Plotly.newPlot('chartRight', data);
+
 
 
   detectorInitiated = true;
@@ -181,76 +193,148 @@ async function runSimulation() {
   //   y2.push(Math.random()*3);
   // }
 
-  let deltaY = 0;
-  let deltaX = 0;
-  let grad = 0;
-  let intercept = 0;
+  let aParam = 0;
+  let bParam = 0;
+  let cParam = 0;
+
   let Xintersection = 0;
+  let Yintersection = 0;
   let lineCrossCount = 0;
   let detHit = false;
+  let linesCrossBool = false;
+  let intersectsOnLine = false;
 
   // only run if the detector has been initiated!
   if(detectorInitiated == true) {
 
-    // Next need to simulate the particles (in groups of 100? 1000?)
-    for (let i = 0; i < 1000; i++) {
-      detHit = false;
 
-      // Simulating particle emission
-      vectorAnglePolar = ejectParticle();
-      vectorAngleCartesian = convertSphericalToCartesian(1.0, vectorAnglePolar[0], vectorAnglePolar[1]);
-
-      //    Then need to calculate its position of the particleon the x-y plane of the detector
-      xPlane = vectorAngleCartesian[0] * (detZ[0] / vectorAngleCartesian[2]);
-      yPlane = vectorAngleCartesian[1] * (detZ[0] / vectorAngleCartesian[2]);
+    for (let j = 0; j < 30; j++) {
 
 
-      // Code that determines if the particle hit the detector or not
+      // Next need to simulate the particles (in groups of 100? 1000?)
+      for (let i = 0; i < 10000; i++) {
+        detHit = false;
+        lineCrossCount = 0;
+        Xintersection = 0;
+        Yintersection = 0;
+        linesCrossBool = false;
+        intersectsOnLine = false;
 
-      //looping over the vertices (except the last one)
-      // and joining them into lines.
-      for(let lineIndex = 0; lineIndex <x0.length - 1; lineIndex++ ) {
 
-        // Calculating the parameters of the line
-        deltaX = x0[lineIndex + 1] - x0[lineIndex];
-        deltaY = y0[lineIndex + 1] - y0[lineIndex];
-        grad = deltaY / deltaX;
-        intercept = y0[lineIndex] - (grad * x0[lineIndex]);
 
-        // Where does this line and a horizontal line at the point of interest intersect?
-        Xintersection = (intercept - yPlane) / (-grad);
 
-        // Need to make sure that it crosses the line between the two vertices as well!!!
-        if( Xintersection >= xPlane ) 
-        {
-          lineCrossCount++;
+
+
+
+        // Simulating particle emission
+        vectorAnglePolar = ejectParticle();
+        vectorAngleCartesian = convertSphericalToCartesian(1.0, vectorAnglePolar[0], vectorAnglePolar[1]);
+
+        //    Then need to calculate its position of the particleon the x-y plane of the detector
+        xPlane = vectorAngleCartesian[0] * (detZ[0] / vectorAngleCartesian[2]);
+        yPlane = vectorAngleCartesian[1] * (detZ[0] / vectorAngleCartesian[2]);
+
+        // console.log("DEBUG0: " + xPlane + "  " + yPlane);
+
+        // Code that determines if the particle hit the detector or not
+
+        //looping over the vertices (except the last one)
+        // and joining them into lines.
+        // Then solving the "point-in-polygon" problem to varify if the 
+        // particle hit the detector
+        for(let lineIndex = 0; lineIndex <x0.length - 1; lineIndex++ ) {
+
+          linesCrossBool = false;
+
+          // Calculating the parameters of the line
+          aParam = y0[lineIndex] - y0[lineIndex+1];
+          bParam = x0[lineIndex+1] - x0[lineIndex];
+          cParam = ((x0[lineIndex] - x0[lineIndex+1])*y0[lineIndex]) + ( (y0[lineIndex+1] - y0[lineIndex])*x0[lineIndex] );
+
+
+
+          // Checking if the lines are paralell
+          // If they are, then they don't cross
+          // If they are not, continue to calculate xIntersection of two lines
+          if(aParam == 0) {
+            linesCrossBool == false;
+          }
+          else {
+            Xintersection = ((-bParam*yPlane) - cParam) / aParam;
+            Yintersection = yPlane;
+
+            // console.log("DEBUG: " + Xintersection + "  " + Yintersection)
+
+
+
+            // Is the intersection on the line itself, or an extension?
+            if( (Yintersection>=y0[lineIndex] && Yintersection<=y0[lineIndex+1]) || ( (Yintersection<=y0[lineIndex] && Yintersection>=y0[lineIndex+1]) ) ) {
+              intersectsOnLine = true;
+            }
+            else {
+              intersectsOnLine = false;
+            }
+
+            // Combining conditions to see if the lines intersect 
+            if(Xintersection >= xPlane && intersectsOnLine == true ) {
+              linesCrossBool = true;
+            }
+            else {
+              linesCrossBool = false;
+            }
+
+
+          }
+
+
+
+          // console.log("DEBUG1: " + x0[lineIndex] + "  " + y0[lineIndex]);
+          // console.log("DEBUG2: " + x0[lineIndex+1] + "  " + y0[lineIndex+1]);
+          // console.log("DEBUG3: " + xPlane + "  " + yPlane);
+          // console.log("DEBUG4: " + Xintersection);
+
+          // Need to make sure that it crosses the line between the two vertices as well!!!
+          if( linesCrossBool == true ) {
+            // console.log("crossed line!");
+            lineCrossCount++;
+          }
+
+          // console.log("DEBUG1: " + lineCrossCount)
+
+        }
+
+        // console.log("DEBUG2: " + lineCrossCount)
+
+        if(lineCrossCount % 2 == 0) {
+          detHit = false;
+        }
+        else{
+          detHit = true;
+        }
+
+
+        //   Then determine if it HIT the detector or not
+        if(detHit == true) {
+          x2.push(xPlane);
+          y2.push(yPlane);
+          // console.log("debug:  " + xPlane + "  " + yPlane);
         }
 
       }
-
-      if(lineCrossCount % 2 == 0) {
-        detHit = false;
-      }
-      else{
-        detHit = true;
-      }
-
-
-      //   Then determine if it HIT the detector or not
-      if(detHit == true) {
-        x2.push(xPlane);
-        y2.push(yPlane);
-        // console.log("debug:  " + xPlane + "  " + yPlane);
-      }
+      Plotly.redraw('chartRight');
+      await delay(400);
 
     }
+
+
+
 
   }
 
 
 
 
-  Plotly.redraw('chartRight');
+  
 
 
 }
