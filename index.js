@@ -9,6 +9,9 @@ let detectorInitiated = false;
 let vectorAnglePolar = [];
 let vectorAngleCartesian = [];
 
+var iteration = [];
+var calculatedSA = [];
+
 var detX = [];
 var detY = [];
 var detZ = [];
@@ -18,7 +21,6 @@ var xEnd = [10];
 var yStart = [-10];
 var yEnd = [10];
 
-
 var trace1 = {
   x: x0,
   y: y0,
@@ -27,7 +29,16 @@ var trace1 = {
 };
 
 
+var traceSolidAngle = {
+  x: iteration,
+  y: calculatedSA,
+  mode: 'line',
+  type: 'scatter',
+};
 
+
+var SAdata = [traceSolidAngle];
+Plotly.newPlot('chartBottom', SAdata);
 
 function delay(time) {
   return new Promise(resolve => setTimeout(resolve, time));
@@ -109,7 +120,7 @@ function convertSphericalToCartesian(r, theta, phi) {
 
 async function initializeDetector() {
 
-  [detX, detY, detZ] = defineDetector(4, 10, 20, -20, 30);
+  [detX, detY, detZ] = defineDetector(4, 50, 0, 80, 100);
 
   let maxX = detX[0];
   let maxY = detY[0];
@@ -193,6 +204,10 @@ async function runSimulation() {
   //   y2.push(Math.random()*3);
   // }
 
+  let detHitCount = 0;
+  let detMissCount = 0;
+  let solidAngle = [];
+
   let aParam = 0;
   let bParam = 0;
   let cParam = 0;
@@ -204,15 +219,17 @@ async function runSimulation() {
   let linesCrossBool = false;
   let intersectsOnLine = false;
 
+  let subIterationN = 10000;
+
   // only run if the detector has been initiated!
   if(detectorInitiated == true) {
 
 
-    for (let j = 0; j < 30; j++) {
+    for (let j = 1; j <= 50; j++) {
 
 
       // Next need to simulate the particles (in groups of 100? 1000?)
-      for (let i = 0; i < 10000; i++) {
+      for (let i = 0; i < subIterationN; i++) {
         detHit = false;
         lineCrossCount = 0;
         Xintersection = 0;
@@ -318,13 +335,37 @@ async function runSimulation() {
           x2.push(xPlane);
           y2.push(yPlane);
           // console.log("debug:  " + xPlane + "  " + yPlane);
+          detHitCount++;
+        }
+        else {
+          detMissCount++;
         }
 
       }
+
+
+      iteration.push(j*subIterationN);
+      calculatedSA.push( (detHitCount / (detMissCount + detHitCount))*0.5*4*Math.PI );
+
+
+
+      Plotly.redraw('chartBottom');
       Plotly.redraw('chartRight');
       await delay(400);
 
+      // Calculate solid angle from fraction of detected to undetected hits
+      console.log(detHitCount / (detMissCount + detHitCount) );
+
     }
+
+
+    
+
+
+
+
+
+
 
 
 
