@@ -18,13 +18,13 @@
 }
 
 .top-charts{
-	width: 80%;
+	width: 90%;
 	margin: auto;
 	text-align: center;
 }
 
 .col{
-	flex-basis: 45%;
+	flex-basis: 48%;
 	height: 450px;
 }
 

@@ -36,9 +36,18 @@ var traceSolidAngle = {
   type: 'scatter',
 };
 
+var layoutBottom = {
+  margin: {
+      l: 150,
+      r: 150,
+      t: 50,
+      b: 200
+    }
+}
+
 
 var SAdata = [traceSolidAngle];
-Plotly.newPlot('chartBottom', SAdata);
+Plotly.newPlot('chartBottom', SAdata, layoutBottom);
 
 function delay(time) {
   return new Promise(resolve => setTimeout(resolve, time));
@@ -120,7 +129,7 @@ function convertSphericalToCartesian(r, theta, phi) {
 
 async function initializeDetector() {
 
-  [detX, detY, detZ] = defineDetector(4, 50, 0, 80, 100);
+  [detX, detY, detZ] = defineDetector(15, 30, 0, 0, 20);
 
   let maxX = detX[0];
   let maxY = detY[0];
@@ -136,7 +145,7 @@ async function initializeDetector() {
     if(x0[vertex] > maxX) maxX = x0[vertex];
     if(y0[vertex] > maxY) maxY = y0[vertex];
     if(x0[vertex] < minX) minX = x0[vertex];
-    if(x0[vertex] < minY) minY = y0[vertex];
+    if(y0[vertex] < minY) minY = y0[vertex];
 
   }
 
@@ -172,8 +181,17 @@ async function initializeDetector() {
     }
   };
 
+  var layoutRight = {
+  margin: {
+      l: 20,
+      r: 20,
+      t: 20,
+      b: 20
+    }
+}
+
   var data = [trace1, trace3];
-  Plotly.newPlot('chartRight', data);
+  Plotly.newPlot('chartRight', data, layoutRight);
 
 
 
