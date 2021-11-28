@@ -14,15 +14,39 @@
   <div class="title-box">
     <h1>Solid Angle Simulator</h1>
     <p>A Monte Carlo simulator designed to calculate the solid angle of a detector relative to a radioactive source</p>
-    <button onclick="initializeDetector()">Click me1</button>
-    <button onclick="runSimulation()">Click me2</button>
   </div>
 
 
   <div class="top-charts">
     <div class="row">
       <div class="col">
-        <div id="chartLeft"></div>
+        <div id="userInputForm">
+          <form name="detectorForm" action="" method="GET">
+            <h4>Define Detector</h4>
+            <label for="nPolygonInput">Detector Shape (n polygon):  </label>
+            <INPUT TYPE="text" NAME="nPolygonInput" VALUE="6" SIZE="4"><br>
+            <label for="detSizeInput">Detector size:  </label>
+            <INPUT TYPE="text" NAME="detSizeInput" VALUE="10" SIZE="4"><br>
+            <label>Detector center coordinates (source at origin):  </label><br>
+            <label for="detXInput">x:  </label>
+            <INPUT TYPE="text" NAME="detXInput" VALUE="40" SIZE="4">
+            <label for="detYInput">y:  </label>
+            <INPUT TYPE="text" NAME="detYInput" VALUE="40" SIZE="4">
+            <label for="detZInput">z:  </label>
+            <INPUT TYPE="text" NAME="detZInput" VALUE="40" SIZE="4"><br><br>
+            <INPUT TYPE="button" NAME="detectorInitButton" Value="Initialize Detector" onClick="initializeDetector(this.form)"><br><br><br>
+          </form>
+          <form name="simulationForm" action="" method="GET">
+            
+            <h4>Simulation Parameters</h4>
+            <label for="detXsubIterationNInput"># of simulated particles per loop:  </label>
+            <INPUT TYPE="text" NAME="subIterationNInput" VALUE="10000" SIZE="4"><br>
+            <label for="loopNumber"># of loops:  </label>
+            <INPUT TYPE="text" NAME="loopNumber" VALUE="50" SIZE="4"><br><br>
+            <INPUT TYPE="button" NAME="runSimulationButton" Value="Run Simulation" onClick="runSimulation(this.form)">
+
+          </form>
+        </div>
       </div>
       <div class="col">
         <div id="chartMiddle"></div>
@@ -32,7 +56,22 @@
       </div>
     </div>
   </div>
-  <div id="chartBottom"></div>
+
+
+
+
+  <div class="bottom-charts">
+      <div class="row">
+        <div class="colBottomLeft">
+          <div id="chartBottomLeft"></div>
+        </div>       
+        <div class="colBottomRight">
+          <div id="chartBottomRight"></div>
+        </div>
+      </div>
+    </div>
+
+
   
 
 

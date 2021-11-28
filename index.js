@@ -1,3 +1,21 @@
+
+
+
+
+function testResults (form) {
+    var TestVar = form.inputbox.value;
+    alert ("You typed: " + TestVar);
+}
+
+
+
+
+
+
+
+
+
+
 var x0 = [];
 var y0 = [];
 var x1 = [];
@@ -11,6 +29,7 @@ let vectorAngleCartesian = [];
 
 var iteration = [];
 var calculatedSA = [];
+var SA_hist = [];
 
 var detX = [];
 var detY = [];
@@ -32,22 +51,42 @@ var trace1 = {
 var traceSolidAngle = {
   x: iteration,
   y: calculatedSA,
+  xaxis: 'x1',
+  yaxis: 'y1',
   mode: 'line',
   type: 'scatter',
 };
 
-var layoutBottom = {
+var histSolidAngle = {
+  x: SA_hist,
+  type: 'histogram',
+  // orientation: 'h'
+};
+
+var layoutBottomLeft = {
   margin: {
-      l: 150,
-      r: 150,
-      t: 50,
+      l: 40,
+      r: 40,
+      t: 20,
       b: 200
-    }
+    },
+}
+
+var layoutBottomRight = {
+  margin: {
+      l: 40,
+      r: 40,
+      t: 20,
+      b: 200
+    },
 }
 
 
 var SAdata = [traceSolidAngle];
-Plotly.newPlot('chartBottom', SAdata, layoutBottom);
+Plotly.newPlot('chartBottomLeft', SAdata, layoutBottomLeft);
+
+var SAhist = [histSolidAngle];
+Plotly.newPlot('chartBottomRight', SAhist, layoutBottomRight);
 
 function delay(time) {
   return new Promise(resolve => setTimeout(resolve, time));
@@ -58,6 +97,8 @@ function delay(time) {
 // detector face based on the shape, and the x-y-z offset
 // from the radioactive source
 function defineDetector(nPoly, size, xOffset, yOffset, zOffset) {
+
+  
 
   let verticesX = [];
   let verticesY = [];
@@ -127,9 +168,18 @@ function convertSphericalToCartesian(r, theta, phi) {
 
 
 
-async function initializeDetector() {
+async function initializeDetector(form) {
 
-  [detX, detY, detZ] = defineDetector(15, 30, 0, 0, 20);
+
+  var detPolygonN = form.nPolygonInput.value;
+
+  var detSize = form.detSizeInput.value;
+
+  let detOffsetX = parseFloat(form.detXInput.value);
+  let detOffsetY = parseFloat(form.detYInput.value);
+  let detOffsetZ = parseFloat(form.detZInput.value);
+
+  [detX, detY, detZ] = defineDetector(detPolygonN, detSize, detOffsetX, detOffsetY, detOffsetZ);
 
   let maxX = detX[0];
   let maxY = detY[0];
@@ -183,10 +233,10 @@ async function initializeDetector() {
 
   var layoutRight = {
   margin: {
-      l: 20,
-      r: 20,
-      t: 20,
-      b: 20
+      l: 25,
+      r: 25,
+      t: 25,
+      b: 25
     }
 }
 
@@ -214,7 +264,11 @@ async function initializeDetector() {
 
 
 
-async function runSimulation() {
+async function runSimulation(form) {
+
+  var nLoops = form.loopNumber.value;
+  var subIterationN = form.subIterationNInput.value;
+  
 
 
   // for(let a=0; a<100; a++) {
@@ -237,13 +291,13 @@ async function runSimulation() {
   let linesCrossBool = false;
   let intersectsOnLine = false;
 
-  let subIterationN = 10000;
+  // let subIterationN = 10000;
 
   // only run if the detector has been initiated!
   if(detectorInitiated == true) {
 
 
-    for (let j = 1; j <= 50; j++) {
+    for (let j = 1; j <= nLoops; j++) {
 
 
       // Next need to simulate the particles (in groups of 100? 1000?)
@@ -364,10 +418,11 @@ async function runSimulation() {
 
       iteration.push(j*subIterationN);
       calculatedSA.push( (detHitCount / (detMissCount + detHitCount))*0.5*4*Math.PI );
+      SA_hist.push( (detHitCount / (detMissCount + detHitCount))*0.5*4*Math.PI );
 
 
-
-      Plotly.redraw('chartBottom');
+      Plotly.redraw('chartBottomRight');
+      Plotly.redraw('chartBottomLeft');
       Plotly.redraw('chartRight');
       await delay(400);
 

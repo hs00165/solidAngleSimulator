@@ -6,6 +6,7 @@
 }
 .title-box h1{
 	margin-top: 20px;
+	margin-bottom: 0px;
 	min-height:  10vh;
 	width:  100%;
 	position: relative;
@@ -23,9 +24,28 @@
 	text-align: center;
 }
 
+.bottom-charts{
+	width: 90%;
+	margin: auto;
+	text-align: center;
+}
+
 .col{
-	flex-basis: 48%;
+	flex-basis: 30%;
 	height: 450px;
+	/*border-style: solid;*/
+}
+
+.colBottomLeft{
+	flex-basis: 62%;
+	height: 250px;
+	/*border-style: solid;*/
+}
+
+.colBottomRight{
+	flex-basis: 35%;
+	height: 250px;
+	/*border-style: solid;*/
 }
 
 .row{
