@@ -13,12 +13,24 @@
 <body>
   <div class="title-box">
     <h1>Solid Angle Simulator</h1>
-    <p>A Monte Carlo simulator designed to calculate the solid angle of a detector relative to a radioactive source</p>
   </div>
 
 
   <div class="top-charts">
     <div class="row">
+      
+      <div class="col">
+        <div id="chartLeft">
+          
+          <p>A Monte Carlo simulator designed to calculate the solid angle of a detector relative to a radioactive source</p><br><br>
+
+          <p>Solid angle: <span id="outputSA"></span> +/- <span id="outputSAError"></span></p>
+
+
+
+        </div>
+      </div>   
+
       <div class="col">
         <div id="userInputForm">
           <form name="detectorForm" action="" method="GET">
@@ -48,10 +60,8 @@
           </form>
         </div>
       </div>
-      <div class="col">
-        <div id="chartMiddle"></div>
-      </div>       
-      <div class="col">
+
+      <div class="colRight">
         <div id="chartRight"></div>
       </div>
     </div>

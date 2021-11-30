@@ -30,6 +30,8 @@ let vectorAngleCartesian = [];
 var iteration = [];
 var calculatedSA = [];
 var SA_hist = [];
+var errorSA = [];
+let iterationCount = 0;
 
 var detX = [];
 var detY = [];
@@ -45,22 +47,39 @@ var trace1 = {
   y: y0,
   mode: 'line',
   type: 'scatter',
+  marker: {
+            color: 'rgb( 33, 97, 140 )'
+  }
 };
 
 
 var traceSolidAngle = {
   x: iteration,
   y: calculatedSA,
+  error_y: {
+    type: 'data',
+    array: errorSA,
+    visible: true,
+    color: 'rgb( 33, 97, 140 )'
+    
+  },
   xaxis: 'x1',
   yaxis: 'y1',
   mode: 'line',
   type: 'scatter',
+  marker: {
+            color: 'rgb( 33, 97, 140 )'
+  },
+
 };
 
 var histSolidAngle = {
   x: SA_hist,
   type: 'histogram',
   // orientation: 'h'
+  marker:{
+    color:  'rgb( 33, 97, 140 )'
+  }
 };
 
 var layoutBottomLeft = {
@@ -68,8 +87,9 @@ var layoutBottomLeft = {
       l: 40,
       r: 40,
       t: 20,
-      b: 200
+      b: 20
     },
+    height: 250
 }
 
 var layoutBottomRight = {
@@ -77,8 +97,9 @@ var layoutBottomRight = {
       l: 40,
       r: 40,
       t: 20,
-      b: 200
+      b: 20
     },
+    height: 250
 }
 
 
@@ -170,11 +191,18 @@ function convertSphericalToCartesian(r, theta, phi) {
 
 async function initializeDetector(form) {
 
+  // emptying the arrays that represent the vertices of the 
+  // detector
+  x0.length = 0;
+  y0.length = 0;
 
-  var detPolygonN = form.nPolygonInput.value;
+  //Setting the iteration count for the monte carlo simulation
+  // it only resets when the detector configuration is changed.
+  iterationCount = 0;
+  
 
-  var detSize = form.detSizeInput.value;
-
+  var detPolygonN = parseInt(form.nPolygonInput.value);
+  var detSize = parseFloat(form.detSizeInput.value);
   let detOffsetX = parseFloat(form.detXInput.value);
   let detOffsetY = parseFloat(form.detYInput.value);
   let detOffsetZ = parseFloat(form.detZInput.value);
@@ -199,8 +227,8 @@ async function initializeDetector(form) {
 
   }
 
-  x0.push(detX[0]);
-  y0.push(detY[0]);
+  x0[detX.length] = detX[0];
+  y0[detX.length] = detY[0];
 
   xStart[0] = minX - 3;
   xEnd[0] = maxX + 3;
@@ -216,7 +244,7 @@ async function initializeDetector(form) {
     x: x2,
     y: y2,
     type: 'histogram2d',
-    // colorscale : [['0' , 'rgb(0,225,100)'],['1', 'rgb(100,0,200)']],
+    colorscale : [['0' , 'rgb( 254, 254, 254 )'],['1', 'rgb( 33, 97, 140 )']],
 
     xbins: {
       start: xStart[0],
@@ -237,7 +265,18 @@ async function initializeDetector(form) {
       r: 25,
       t: 25,
       b: 25
+    },
+
+    xaxis: {
+      showgrid: false,
+      showline: false
+    },
+    yaxis: {
+      showgrid: false,
+      showline: false
     }
+
+
 }
 
   var data = [trace1, trace3];
@@ -259,15 +298,18 @@ async function initializeDetector(form) {
 
 
 
+// Counters for when the particles hit/miss the detector
+let detHitCount = 0;
+let detMissCount = 0;
 
-
-
+let solidAngleResult = 0;
+let solidAngleResultError = 0;
 
 
 async function runSimulation(form) {
 
-  var nLoops = form.loopNumber.value;
-  var subIterationN = form.subIterationNInput.value;
+  var nLoops = parseInt(form.loopNumber.value);
+  var subIterationN = parseInt(form.subIterationNInput.value);
   
 
 
@@ -276,8 +318,7 @@ async function runSimulation(form) {
   //   y2.push(Math.random()*3);
   // }
 
-  let detHitCount = 0;
-  let detMissCount = 0;
+  
   let solidAngle = [];
 
   let aParam = 0;
@@ -415,11 +456,18 @@ async function runSimulation(form) {
 
       }
 
+      iterationCount = iterationCount + subIterationN;
 
-      iteration.push(j*subIterationN);
-      calculatedSA.push( (detHitCount / (detMissCount + detHitCount))*0.5*4*Math.PI );
-      SA_hist.push( (detHitCount / (detMissCount + detHitCount))*0.5*4*Math.PI );
+      solidAngleResult = (detHitCount / (detMissCount + detHitCount))*0.5*4*Math.PI;
+      solidAngleResultError =  solidAngleResult * Math.sqrt( Math.pow( Math.sqrt(detHitCount)/detHitCount , 2 )  +  Math.pow( Math.sqrt(detHitCount+detMissCount)/(detHitCount+detMissCount) , 2 ) );
 
+      iteration.push(iterationCount);
+      calculatedSA.push( solidAngleResult );
+      SA_hist.push( solidAngleResult );
+      errorSA.push(solidAngleResultError);
+
+      document.getElementById("outputSA").innerHTML = solidAngleResult.toFixed(4);
+      document.getElementById("outputSAError").innerHTML = solidAngleResultError.toFixed(5);
 
       Plotly.redraw('chartBottomRight');
       Plotly.redraw('chartBottomLeft');
