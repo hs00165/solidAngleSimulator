@@ -42,6 +42,9 @@ var xEnd = [10];
 var yStart = [-10];
 var yEnd = [10];
 
+var config = {responsive: true}
+
+
 var trace1 = {
   x: x0,
   y: y0,
@@ -89,7 +92,8 @@ var layoutBottomLeft = {
       t: 20,
       b: 20
     },
-    height: 250
+    autosize: true,
+    height: 230
 }
 
 var layoutBottomRight = {
@@ -99,15 +103,15 @@ var layoutBottomRight = {
       t: 20,
       b: 20
     },
-    height: 250
+    autosize: true
 }
 
 
 var SAdata = [traceSolidAngle];
 Plotly.newPlot('chartBottomLeft', SAdata, layoutBottomLeft);
 
-var SAhist = [histSolidAngle];
-Plotly.newPlot('chartBottomRight', SAhist, layoutBottomRight);
+// var SAhist = [histSolidAngle];
+// Plotly.newPlot('chartBottomRight', SAhist, layoutBottomRight, config);
 
 function delay(time) {
   return new Promise(resolve => setTimeout(resolve, time));
@@ -262,7 +266,7 @@ async function initializeDetector(form) {
   var layoutRight = {
   margin: {
       l: 25,
-      r: 25,
+      r: 5,
       t: 25,
       b: 25
     },
@@ -274,13 +278,15 @@ async function initializeDetector(form) {
     yaxis: {
       showgrid: false,
       showline: false
-    }
+    },
+
+    autosize: true
 
 
 }
 
   var data = [trace1, trace3];
-  Plotly.newPlot('chartRight', data, layoutRight);
+  Plotly.newPlot('chartRight', data, layoutRight, config);
 
 
 
@@ -469,7 +475,7 @@ async function runSimulation(form) {
       document.getElementById("outputSA").innerHTML = solidAngleResult.toFixed(4);
       document.getElementById("outputSAError").innerHTML = solidAngleResultError.toFixed(5);
 
-      Plotly.redraw('chartBottomRight');
+      // Plotly.redraw('chartBottomRight');
       Plotly.redraw('chartBottomLeft');
       Plotly.redraw('chartRight');
       await delay(400);

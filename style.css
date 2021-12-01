@@ -47,10 +47,10 @@
 	flex-basis: 30%;
 	/*height: 450px;*/
 	border-style: solid;
+	border-radius: 12px;
 	margin: 10px;
 	margin-bottom: 20px;
-	padding: 50px;
-	border-radius: 12px;
+	padding: 10px;
 	border-color: var(--grey);
 }
 
@@ -59,7 +59,7 @@
 	/*height: 450px;*/
 	border-style: solid;
 	border-radius: 12px;
-	margin: 10px;
+	margin: 5px;
 	margin-bottom: 20px;
 	padding: 10px;
 	border-color: var(--grey);
@@ -88,4 +88,40 @@
 .row{
 	display: flex;
 	justify-content: space-between;
+}
+.colBottom{
+	flex-basis: 99%;
+	/*height: 450px;*/
+	height: 300px;
+	border-style: solid;
+	margin: 10px;
+	margin-bottom: 20px;
+	padding: 20px;
+	border-radius: 12px;
+	border-color: var(--grey);
+}
+
+@media(max-width: 700px){
+	.col{
+		flex-basis:95% !important;
+		min-height: 320px;
+	}
+	.colRight{
+		flex-basis: 95%;
+		min-height: 320px;
+	}
+	.colBottomLeft{
+		flex-basis: 95%;
+		min-height: 320px;
+	}
+	.colBottomRight{
+		flex-basis: 95%;
+		min-height: 320px;
+	}
+	.colBottom{
+		flex-basis: 95%;
+		min-height: 320px;
+	}
+
+
 }
