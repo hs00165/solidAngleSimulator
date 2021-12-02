@@ -87,13 +87,20 @@ var histSolidAngle = {
 
 var layoutBottomLeft = {
   margin: {
-      l: 40,
-      r: 40,
+      l: 80,
+      r: 10,
       t: 20,
-      b: 20
+      b: 40
     },
     autosize: true,
-    height: 230
+    height: 250,
+
+    xaxis: {
+      title: 'Iterations'
+    },
+    yaxis: {
+      title: 'Solid Angle [sr]'
+    }
 }
 
 var layoutBottomRight = {
@@ -265,19 +272,26 @@ async function initializeDetector(form) {
 
   var layoutRight = {
   margin: {
-      l: 25,
+      l: 45,
       r: 5,
       t: 25,
-      b: 25
+      b: 45,
+      autoexpand: true
+    },
+
+    title: {
+      text:'Plot Title'
     },
 
     xaxis: {
       showgrid: false,
-      showline: false
+      showline: false,
+      title: 'X'
     },
     yaxis: {
       showgrid: false,
-      showline: false
+      showline: false,
+      title: 'Y'
     },
 
     autosize: true

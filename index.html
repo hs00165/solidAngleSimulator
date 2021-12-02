@@ -13,6 +13,7 @@
 <body>
   <div class="title-box">
     <h1>Solid Angle Simulator</h1>
+    <p>Harrison Sims</p>
   </div>
 
 
@@ -20,21 +21,29 @@
     <div class="row">
       
       <div class="col">
-        <div id="chartLeft">
+        <div id="description">
           
-          <p>A Monte Carlo simulator designed to calculate the solid angle of a detector relative to a radioactive source</p><br><br>
-
-          <p>Solid angle: <span id="outputSA"></span> +/- <span id="outputSAError"></span></p>
-
-
+          <p class="descriptive-title">A Monte Carlo simulator to calculate the solid angle of a detector relative to source</p>
+          <p>Step 1: Define the shape, size and position of the detector, relative to the source at the origin.</p><br>
+          <p>Step 2: Enter the number of particles to be isotropically emitted from the source between each plot update, and the number of times the plots are updated.</p><br>
 
         </div>
+
+        <div class="result">
+
+          <p>Solid angle: <span id="outputSA"></span> +/- <span id="outputSAError"></span> sr</p>
+
+        </div>
+
+        
       </div>   
 
       <div class="col">
         <div id="userInputForm">
           <form name="detectorForm" action="" method="GET">
-            <h4>Define Detector</h4>
+            <div class="sub-heading">
+              <h4>Define Detector</h4>
+            </div>
             <label for="nPolygonInput">Detector Shape (n polygon):  </label>
             <INPUT TYPE="text" NAME="nPolygonInput" VALUE="6" SIZE="4"><br>
             <label for="detSizeInput">Detector size:  </label>
@@ -46,7 +55,9 @@
             <INPUT TYPE="text" NAME="detYInput" VALUE="40" SIZE="4">
             <label for="detZInput">z:  </label>
             <INPUT TYPE="text" NAME="detZInput" VALUE="40" SIZE="4"><br><br>
-            <INPUT TYPE="button" NAME="detectorInitButton" Value="Initialize Detector" onClick="initializeDetector(this.form)"><br><br><br>
+            <div class="button_class">
+              <INPUT TYPE="button" NAME="detectorInitButton" Value="Initialize Detector" onClick="initializeDetector(this.form)"><br><br><br>
+            </div>
           </form>
           <form name="simulationForm" action="" method="GET">
             
@@ -55,7 +66,9 @@
             <INPUT TYPE="text" NAME="subIterationNInput" VALUE="10000" SIZE="4"><br>
             <label for="loopNumber"># of loops:  </label>
             <INPUT TYPE="text" NAME="loopNumber" VALUE="50" SIZE="4"><br><br>
-            <INPUT TYPE="button" NAME="runSimulationButton" Value="Run Simulation" onClick="runSimulation(this.form)">
+            <div class="button_class">
+              <INPUT TYPE="button" NAME="runSimulationButton" Value="Run Simulation" onClick="runSimulation(this.form)">
+            </div>
 
           </form>
         </div>
