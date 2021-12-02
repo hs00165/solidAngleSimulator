@@ -19,6 +19,15 @@ label{
 	margin: 4px;
 }
 
+.button{
+	padding: 3px;
+	padding-left: 12px;
+	padding-right: 12px;
+/*	border-style: solid;
+	border-color: #000000;*/
+	border-radius: 20px;
+}
+
 
 h4{
 	text-align: center;
